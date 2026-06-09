@@ -9,7 +9,7 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 CONFLICT_MARKERS = ("<<<<<<<", "=======", ">>>>>>>")
-TEXT_SUFFIXES = {".html", ".md", ".py", ".toml", ".csv", ".js", ".mjs", ".txt"}
+TEXT_SUFFIXES = {".html", ".md", ".py", ".toml", ".csv", ".js", ".mjs", ".txt", ".yml", ".yaml"}
 
 
 def tracked_text_files() -> list[Path]:
@@ -38,3 +38,16 @@ def test_web_page_embedded_javascript_has_valid_syntax(tmp_path: Path):
     script_file.write_text(script, encoding="utf-8")
 
     subprocess.run([node, "--check", str(script_file)], check=True, cwd=REPO_ROOT)
+
+
+def test_github_pages_workflow_publishes_static_web_directory():
+    workflow = REPO_ROOT / ".github" / "workflows" / "deploy-pages.yml"
+
+    assert workflow.exists()
+
+    contents = workflow.read_text(encoding="utf-8")
+
+    assert "actions/configure-pages@v5" in contents
+    assert "actions/upload-pages-artifact@v3" in contents
+    assert "actions/deploy-pages@v4" in contents
+    assert "path: web" in contents

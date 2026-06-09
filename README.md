@@ -82,3 +82,17 @@ sample_data/capacity_sample.csv  # base de exemplo
 3. Integrar um modelo multimodal para interpretar prints de gráficos como apoio visual.
 4. Usar um modelo de linguagem para gerar relatórios executivos semanais.
 5. Criar simulações: “se o volume subir 20%, quantas pessoas preciso?”.
+
+## Como publicar no GitHub Pages
+
+A página está pronta para ser publicada pelo GitHub Pages usando GitHub Actions. O workflow em `.github/workflows/deploy-pages.yml` publica automaticamente a pasta `web/`, que contém o protótipo estático.
+
+Para ver online:
+
+1. Suba esta branch para o GitHub.
+2. No repositório, abra **Settings > Pages**.
+3. Em **Build and deployment**, selecione **GitHub Actions** como fonte.
+4. Rode o workflow **Deploy Capacity Vision web** pela aba **Actions** ou faça push em `main`, `master` ou `work`.
+5. Quando o deploy terminar, a URL pública aparecerá no resumo do workflow.
+
+Também adicionei `web/.nojekyll` para garantir que o GitHub Pages sirva todos os arquivos estáticos sem processamento do Jekyll.
