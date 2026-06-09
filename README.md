@@ -61,6 +61,10 @@ Depois acesse `http://localhost:8000`. A tela já abre com um exemplo crítico c
 4. Use a área de perguntas para testar frases como “tem risco de capacidade?”, “as pessoas acompanham?” ou “a produtividade caiu?”.
 5. Se quiser mostrar um print do dashboard, use o upload de imagem para prévia visual; a análise exata continua vindo do CSV.
 
+## Validação contra conflitos de código
+
+O projeto tem um teste de integridade para evitar que marcadores de conflito de merge, como `<<<<<<<`, `=======` e `>>>>>>>`, fiquem dentro dos arquivos versionados. Também há uma validação de sintaxe do JavaScript embutido na página web quando Node.js está disponível.
+
 ## Estrutura do projeto
 
 ```text

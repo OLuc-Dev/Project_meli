@@ -529,10 +529,12 @@ function parseCsv(csv) {
   const points = lines.slice(1).map(line => {
     const cols = splitCsvLine(line);
     const people = parseNumber(cols[map.people]);
+    const packages = parseNumber(cols[map.packages]);
     if (!people || people <= 0) throw new Error("A coluna pessoas/headcount precisa ser maior que zero.");
+    if (packages === null || packages < 0) throw new Error("A coluna pacotes/volume precisa ser maior ou igual a zero.");
     return {
       period: cols[map.period],
-      packages: parseNumber(cols[map.packages]),
+      packages,
       people,
       forecast: map.forecast === undefined ? null : parseNumber(cols[map.forecast]),
       capacity: map.capacity === undefined ? null : parseNumber(cols[map.capacity])
@@ -668,7 +670,10 @@ function createChart(report) {
   const peopleMax = Math.max(...points.map(point => point.people));
   const packagePath = points.map((point, index) => `${index === 0 ? "M" : "L"}${x(index)},${scale(point.packages, pkgMin, pkgMax)}`).join(" ");
   const peoplePath = points.map((point, index) => `${index === 0 ? "M" : "L"}${x(index)},${scale(point.people, peopleMin, peopleMax)}`).join(" ");
-  const capacityPath = points.filter(point => point.capacity).map((point, index) => `${index === 0 ? "M" : "L"}${x(index)},${scale(point.capacity, pkgMin, pkgMax)}`).join(" ");
+  const capacityPath = points
+    .map((point, index) => point.capacity ? `${index === 0 ? "M" : "L"}${x(index)},${scale(point.capacity, pkgMin, pkgMax)}` : null)
+    .filter(Boolean)
+    .join(" ");
   const labels = points.map((point, index) => `<text x="${x(index)}" y="338" text-anchor="middle" fill="#94a3b8" font-size="12">${point.period}</text>`).join("");
   const packageDots = points.map((point, index) => `<circle cx="${x(index)}" cy="${scale(point.packages, pkgMin, pkgMax)}" r="5" fill="#3483fa"><title>${point.period}: ${fmtNum(point.packages)} pacotes</title></circle>`).join("");
   const peopleDots = points.map((point, index) => `<circle cx="${x(index)}" cy="${scale(point.people, peopleMin, peopleMax)}" r="4" fill="#ffe600"><title>${point.period}: ${fmtNum(point.people)} pessoas</title></circle>`).join("");
