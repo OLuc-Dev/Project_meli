@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Capacity Vision ML</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0d1117;
+      --panel: #161b22;
+      --muted: #8b949e;
+      --text: #f0f6fc;
+      --yellow: #ffd33d;
+      --green: #3fb950;
+      --red: #f85149;
+      --blue: #58a6ff;
+      --border: #30363d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #1f3a5f 0, transparent 34rem), var(--bg);
+      color: var(--text);
+    }
+    main { max-width: 1180px; margin: 0 auto; padding: 32px 20px 56px; }
+    .hero { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px; align-items: stretch; }
+    .card {
+      background: rgba(22, 27, 34, 0.88);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 18px 70px rgba(0,0,0,.28);
+    }
+    h1 { font-size: clamp(2rem, 5vw, 4.6rem); line-height: .95; margin: 0 0 18px; letter-spacing: -0.06em; }
+    h2 { margin: 0 0 14px; font-size: 1.25rem; }
+    p { color: var(--muted); line-height: 1.6; }
+    .badge { display: inline-flex; gap: 8px; align-items: center; border: 1px solid var(--border); padding: 8px 12px; border-radius: 999px; color: var(--yellow); margin-bottom: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 18px 0; }
+    .metric { border: 1px solid var(--border); border-radius: 16px; padding: 16px; background: #0d1117; }
+    .metric span { color: var(--muted); display: block; font-size: .82rem; }
+    .metric strong { display: block; font-size: 1.8rem; margin-top: 8px; }
+    input[type="file"], input[type="text"], textarea {
+      width: 100%; background: #0d1117; color: var(--text); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin: 8px 0 14px;
+    }
+    button {
+      border: 0; border-radius: 12px; background: var(--yellow); color: #24292f; padding: 12px 16px; font-weight: 800; cursor: pointer;
+    }
+    button.secondary { background: #21262d; color: var(--text); border: 1px solid var(--border); }
+    .status { font-size: 2rem; font-weight: 900; }
+    .Verde { color: var(--green); } .Amarelo { color: var(--yellow); } .Vermelho { color: var(--red); }
+    ul { padding-left: 20px; } li { margin-bottom: 8px; color: #c9d1d9; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; overflow: hidden; border-radius: 12px; }
+    th, td { padding: 10px; border-bottom: 1px solid var(--border); text-align: right; }
+    th:first-child, td:first-child { text-align: left; }
+    th { color: var(--muted); font-weight: 600; background: #0d1117; }
+    .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+    .hidden { display: none; }
+    @media (max-width: 850px) { .hero, .columns, .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<main>
+  <section class="hero">
+    <div class="card">
+      <div class="badge">⚡ MVP estruturado para Planejamento/Capacidades</div>
+      <h1>Capacity Vision ML</h1>
+      <p>
+        Analise CSVs de pacotes, pessoas, forecast e capacidade com cálculos confiáveis antes de gerar o insight executivo.
+        Esta versão prioriza qualidade: números estruturados primeiro, interpretação depois.
+      </p>
+      <div class="grid">
+        <div class="metric"><span>Status</span><strong id="status" class="status">—</strong></div>
+        <div class="metric"><span>Pacotes</span><strong id="packageChange">—</strong></div>
+        <div class="metric"><span>Pessoas</span><strong id="peopleChange">—</strong></div>
+      </div>
+      <label for="csvFile">Envie um CSV com período, pacotes, pessoas, forecast e capacidade</label>
+      <input id="csvFile" type="file" accept=".csv,text/csv" />
+      <button id="loadSample">Usar exemplo</button>
+      <button class="secondary" id="reset">Limpar</button>
+    </div>
+    <aside class="card">
+      <h2>Pergunte em linguagem natural</h2>
+      <p>Exemplos: “está subindo ou caindo?”, “as pessoas acompanham?”, “tem risco de capacidade?”</p>
+      <input id="question" type="text" placeholder="O volume está subindo desde janeiro?" />
+      <button id="ask">Responder</button>
+      <p id="answer">Carregue um CSV para começar.</p>
+    </aside>
+  </section>
+
+  <section id="results" class="hidden">
+    <div class="columns">
+      <div class="card">
+        <h2>Resumo executivo</h2>
+        <p id="summary"></p>
+        <h2>Alertas</h2>
+        <ul id="alerts"></ul>
+      </div>
+      <div class="card">
+        <h2>Recomendações</h2>
+        <ul id="recommendations"></ul>
+        <h2>Destaques</h2>
+        <ul id="highlights"></ul>
+      </div>
+    </div>
+    <div class="card" style="margin-top: 16px;">
+      <h2>Dados analisados</h2>
+      <div id="table"></div>
+    </div>
+  </section>
+</main>
+<script>
+const sampleCsv = `periodo,pacotes,pessoas,forecast,capacidade
+2026-01,100000,100,98000,115000
+2026-02,112000,103,110000,118000
+2026-03,130000,108,123000,128000
+2026-04,126000,109,132000,130000
+2026-05,148000,112,140000,142000
+2026-06,162000,114,150000,150000`;
+let currentReport = null;
+
+const aliases = {
+  period: ["period", "periodo", "período", "data", "date", "mes", "mês", "dia", "semana"],
+  packages: ["packages", "pacotes", "volume", "pkg", "shipments", "processados", "processed"],
+  people: ["people", "pessoas", "headcount", "hc", "colaboradores", "fte", "equipe"],
+  forecast: ["forecast", "previsto", "previsao", "previsão", "planejado"],
+  capacity: ["capacity", "capacidade", "cap", "capacidade_planejada"]
+};
+
+function normalize(value) {
+  return value.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9_]+/g, "_").replace(/^_|_$/g, "");
+}
+function parseNumber(value) {
+  const clean = String(value || "").trim().replace(/\s/g, "");
+  if (!clean) return null;
+  const normalized = clean.includes(",") && clean.includes(".") ? clean.replace(/\./g, "").replace(",", ".") : clean.replace(",", ".");
+  return Number(normalized);
+}
+function splitCsvLine(line) {
+  const values = [];
+  let current = "";
+  let insideQuotes = false;
+  for (const char of line) {
+    if (char === '"') insideQuotes = !insideQuotes;
+    else if (char === "," && !insideQuotes) { values.push(current); current = ""; }
+    else current += char;
+  }
+  values.push(current);
+  return values.map(value => value.trim());
+}
+function parseCsv(csv) {
+  const lines = csv.trim().split(/\r?\n/).filter(Boolean);
+  const headers = splitCsvLine(lines[0]);
+  const map = {};
+  headers.forEach((header, index) => {
+    const normalized = normalize(header);
+    for (const [canonical, names] of Object.entries(aliases)) {
+      if (names.map(normalize).includes(normalized)) map[canonical] = index;
+    }
+  });
+  ["period", "packages", "people"].forEach(required => {
+    if (map[required] === undefined) throw new Error(`CSV precisa da coluna ${required}.`);
+  });
+  return lines.slice(1).map(line => {
+    const cols = splitCsvLine(line);
+    return {
+      period: cols[map.period],
+      packages: parseNumber(cols[map.packages]),
+      people: parseNumber(cols[map.people]),
+      forecast: map.forecast === undefined ? null : parseNumber(cols[map.forecast]),
+      capacity: map.capacity === undefined ? null : parseNumber(cols[map.capacity])
+    };
+  }).sort((a, b) => a.period.localeCompare(b.period));
+}
+function percent(start, end) { return start === 0 ? null : ((end - start) / start) * 100; }
+function fmtPct(value) { return value === null ? "—" : `${value > 0 ? "+" : ""}${value.toFixed(1)}%`; }
+function fmtNum(value) { return Number(value).toLocaleString("pt-BR", { maximumFractionDigits: 1 }); }
+function slope(values) {
+  const n = values.length, xm = (n - 1) / 2, ym = values.reduce((a,b) => a + b, 0) / n;
+  const num = values.reduce((sum, y, x) => sum + (x - xm) * (y - ym), 0);
+  const den = values.reduce((sum, _, x) => sum + Math.pow(x - xm, 2), 0);
+  return den ? num / den : 0;
+}
+function analyze(points) {
+  const first = points[0], last = points[points.length - 1];
+  const pkgPct = percent(first.packages, last.packages);
+  const pplPct = percent(first.people, last.people);
+  const firstProd = first.packages / first.people;
+  const lastProd = last.packages / last.people;
+  const prodPct = percent(firstProd, lastProd);
+  const pkgSlope = slope(points.map(p => p.packages));
+  const trend = Math.abs(pkgSlope) / (points.reduce((s,p) => s + p.packages, 0) / points.length) < 0.01 ? "estável" : (pkgSlope > 0 ? "alta" : "queda");
+  let risk = 10;
+  const alerts = [];
+  const recommendations = [];
+  const gap = (pkgPct || 0) - (pplPct || 0);
+  if (gap >= 15) { risk += 25; alerts.push(`Pacotes cresceram ${fmtPct(pkgPct)} e pessoas ${fmtPct(pplPct)}, gap de ${gap.toFixed(1)} p.p.`); recommendations.push("Validar produtividade por turno e sustentabilidade do headcount atual."); }
+  if (gap <= -15) { risk += 15; alerts.push("Headcount cresceu acima do volume; pode haver capacidade ociosa."); recommendations.push("Revisar escala e redistribuição antes de novas contratações."); }
+  const worstCapacity = points.filter(p => p.capacity).map(p => ({ period: p.period, utilization: p.packages / p.capacity })).sort((a,b) => b.utilization - a.utilization)[0];
+  if (worstCapacity?.utilization > 1.05) { risk += 30; alerts.push(`Capacidade excedida em ${worstCapacity.period}: ${(worstCapacity.utilization * 100).toFixed(1)}%.`); recommendations.push("Criar plano de contingência para reforço, overtime ou redistribuição de demanda."); }
+  else if (worstCapacity?.utilization > .9) { risk += 15; alerts.push(`Capacidade próxima do limite em ${worstCapacity.period}: ${(worstCapacity.utilization * 100).toFixed(1)}%.`); }
+  if (prodPct < -10) { risk += 20; alerts.push(`Produtividade caiu ${Math.abs(prodPct).toFixed(1)}%.`); recommendations.push("Investigar absenteísmo, mix de pacotes e treinamento."); }
+  const status = risk >= 65 ? "Vermelho" : risk >= 35 ? "Amarelo" : "Verde";
+  return {
+    points, status, risk: Math.min(risk, 100), pkgPct, pplPct, prodPct, trend,
+    summary: `Cenário ${status.toLowerCase()}: pacotes variaram ${fmtPct(pkgPct)} entre ${first.period} e ${last.period}, enquanto pessoas variaram ${fmtPct(pplPct)}. Produtividade variou ${fmtPct(prodPct)}. ${alerts[0] || "Sem alertas críticos no período."}`,
+    alerts: alerts.length ? alerts : ["Nenhum alerta crítico detectado com os dados informados."],
+    recommendations: recommendations.length ? recommendations : ["Manter acompanhamento semanal de volume, pessoas e produtividade."],
+    highlights: [`Maior volume: ${points.reduce((a,b) => a.packages > b.packages ? a : b).period}`, `Menor volume: ${points.reduce((a,b) => a.packages < b.packages ? a : b).period}`, `Tendência principal: ${trend}`]
+  };
+}
+function render(report) {
+  currentReport = report;
+  document.getElementById("results").classList.remove("hidden");
+  const status = document.getElementById("status");
+  status.textContent = report.status;
+  status.className = `status ${report.status}`;
+  document.getElementById("packageChange").textContent = fmtPct(report.pkgPct);
+  document.getElementById("peopleChange").textContent = fmtPct(report.pplPct);
+  document.getElementById("summary").textContent = report.summary;
+  document.getElementById("alerts").innerHTML = report.alerts.map(item => `<li>${item}</li>`).join("");
+  document.getElementById("recommendations").innerHTML = report.recommendations.map(item => `<li>${item}</li>`).join("");
+  document.getElementById("highlights").innerHTML = report.highlights.map(item => `<li>${item}</li>`).join("");
+  document.getElementById("table").innerHTML = `<table><thead><tr><th>Período</th><th>Pacotes</th><th>Pessoas</th><th>Forecast</th><th>Capacidade</th><th>Pacotes/Pessoa</th></tr></thead><tbody>${report.points.map(p => `<tr><td>${p.period}</td><td>${fmtNum(p.packages)}</td><td>${fmtNum(p.people)}</td><td>${p.forecast ? fmtNum(p.forecast) : "—"}</td><td>${p.capacity ? fmtNum(p.capacity) : "—"}</td><td>${fmtNum(p.packages / p.people)}</td></tr>`).join("")}</tbody></table>`;
+}
+function loadCsv(csv) {
+  try { render(analyze(parseCsv(csv))); }
+  catch (error) { alert(error.message); }
+}
+document.getElementById("csvFile").addEventListener("change", event => {
+  const file = event.target.files[0];
+  if (!file) return;
+  file.text().then(loadCsv);
+});
+document.getElementById("loadSample").addEventListener("click", () => loadCsv(sampleCsv));
+document.getElementById("reset").addEventListener("click", () => location.reload());
+document.getElementById("ask").addEventListener("click", () => {
+  if (!currentReport) return;
+  const q = normalize(document.getElementById("question").value);
+  let answer = currentReport.summary;
+  if (q.includes("subindo") || q.includes("caindo") || q.includes("tendencia")) answer = `O volume está em ${currentReport.trend}; variação total de ${fmtPct(currentReport.pkgPct)}.`;
+  if (q.includes("pessoas") || q.includes("headcount")) answer = `Pessoas variaram ${fmtPct(currentReport.pplPct)} contra ${fmtPct(currentReport.pkgPct)} em pacotes.`;
+  if (q.includes("risco") || q.includes("capacidade") || q.includes("bem")) answer = `Status ${currentReport.status}, risco ${currentReport.risk}/100. ${currentReport.alerts[0]}`;
+  document.getElementById("answer").textContent = answer;
+});
+</script>
+</body>
+</html>
