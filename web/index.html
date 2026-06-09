@@ -3,121 +3,467 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Capacity Vision ML</title>
+  <title>Capacity Vision ML — protótipo</title>
   <style>
     :root {
       color-scheme: dark;
-      --bg: #0d1117;
-      --panel: #161b22;
-      --muted: #8b949e;
-      --text: #f0f6fc;
-      --yellow: #ffd33d;
-      --green: #3fb950;
-      --red: #f85149;
-      --blue: #58a6ff;
-      --border: #30363d;
+      --bg: #050608;
+      --panel: rgba(18, 24, 38, 0.86);
+      --panel-strong: #111827;
+      --panel-soft: rgba(255, 255, 255, 0.055);
+      --border: rgba(255, 255, 255, 0.12);
+      --text: #f8fafc;
+      --muted: #9ca3af;
+      --muted-2: #cbd5e1;
+      --meli: #ffe600;
+      --blue: #3483fa;
+      --green: #22c55e;
+      --yellow: #facc15;
+      --red: #fb7185;
+      --purple: #a78bfa;
+      --shadow: 0 26px 80px rgba(0, 0, 0, 0.42);
     }
+
     * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
     body {
       margin: 0;
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top left, #1f3a5f 0, transparent 34rem), var(--bg);
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 8% 8%, rgba(52, 131, 250, 0.36), transparent 31rem),
+        radial-gradient(circle at 85% 0%, rgba(255, 230, 0, 0.17), transparent 27rem),
+        linear-gradient(135deg, #050608 0%, #0b1220 55%, #111827 100%);
       color: var(--text);
     }
-    main { max-width: 1180px; margin: 0 auto; padding: 32px 20px 56px; }
-    .hero { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px; align-items: stretch; }
-    .card {
-      background: rgba(22, 27, 34, 0.88);
+
+    a { color: inherit; }
+
+    .shell { max-width: 1240px; margin: 0 auto; padding: 28px 20px 60px; }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 900; letter-spacing: -0.03em; }
+
+    .logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: #111827;
+      background: linear-gradient(135deg, var(--meli), #fff9a8);
+      box-shadow: 0 15px 40px rgba(255, 230, 0, 0.18);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
       border: 1px solid var(--border);
-      border-radius: 20px;
+      border-radius: 999px;
+      padding: 8px 12px;
+      color: var(--muted-2);
+      background: rgba(255, 255, 255, 0.05);
+      font-size: 0.86rem;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(340px, 0.92fr);
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: 28px;
       padding: 24px;
-      box-shadow: 0 18px 70px rgba(0,0,0,.28);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
     }
-    h1 { font-size: clamp(2rem, 5vw, 4.6rem); line-height: .95; margin: 0 0 18px; letter-spacing: -0.06em; }
-    h2 { margin: 0 0 14px; font-size: 1.25rem; }
-    p { color: var(--muted); line-height: 1.6; }
-    .badge { display: inline-flex; gap: 8px; align-items: center; border: 1px solid var(--border); padding: 8px 12px; border-radius: 999px; color: var(--yellow); margin-bottom: 20px; }
-    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 18px 0; }
-    .metric { border: 1px solid var(--border); border-radius: 16px; padding: 16px; background: #0d1117; }
-    .metric span { color: var(--muted); display: block; font-size: .82rem; }
-    .metric strong { display: block; font-size: 1.8rem; margin-top: 8px; }
-    input[type="file"], input[type="text"], textarea {
-      width: 100%; background: #0d1117; color: var(--text); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin: 8px 0 14px;
+
+    .card.flat { box-shadow: none; background: var(--panel-soft); }
+
+    h1 {
+      margin: 16px 0;
+      max-width: 860px;
+      font-size: clamp(2.4rem, 7vw, 6.7rem);
+      line-height: 0.9;
+      letter-spacing: -0.08em;
     }
-    button {
-      border: 0; border-radius: 12px; background: var(--yellow); color: #24292f; padding: 12px 16px; font-weight: 800; cursor: pointer;
+
+    h2 { margin: 0 0 12px; font-size: 1.25rem; letter-spacing: -0.02em; }
+    h3 { margin: 0 0 8px; font-size: 1rem; }
+    p { color: var(--muted); line-height: 1.62; }
+    label { display: block; color: var(--muted-2); margin: 0 0 8px; font-weight: 750; }
+
+    .hero-copy { font-size: 1.08rem; max-width: 760px; }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+
+    button, .button-like {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-weight: 900;
+      cursor: pointer;
+      background: var(--meli);
+      color: #111827;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
     }
-    button.secondary { background: #21262d; color: var(--text); border: 1px solid var(--border); }
-    .status { font-size: 2rem; font-weight: 900; }
-    .Verde { color: var(--green); } .Amarelo { color: var(--yellow); } .Vermelho { color: var(--red); }
-    ul { padding-left: 20px; } li { margin-bottom: 8px; color: #c9d1d9; }
-    table { width: 100%; border-collapse: collapse; margin-top: 12px; overflow: hidden; border-radius: 12px; }
-    th, td { padding: 10px; border-bottom: 1px solid var(--border); text-align: right; }
+
+    button:hover, .button-like:hover { transform: translateY(-1px); }
+
+    button.secondary, .button-like.secondary {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+    }
+
+    button.ghost { color: var(--muted-2); background: transparent; border: 1px dashed var(--border); }
+
+    input[type="file"], input[type="text"], textarea, select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgba(2, 6, 23, 0.64);
+      color: var(--text);
+      padding: 13px 14px;
+      outline: 0;
+      font: inherit;
+    }
+
+    textarea { min-height: 190px; resize: vertical; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.88rem; }
+
+    .input-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+
+    .example-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .example-card {
+      text-align: left;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      border-radius: 18px;
+      padding: 14px;
+      min-height: 112px;
+    }
+
+    .example-card strong { display: block; margin-bottom: 6px; }
+    .example-card small { color: var(--muted); line-height: 1.45; }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 20px 0 0;
+    }
+
+    .kpi {
+      position: relative;
+      overflow: hidden;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.055);
+      padding: 16px;
+    }
+
+    .kpi::after {
+      content: "";
+      position: absolute;
+      inset: auto -20px -40px auto;
+      width: 100px;
+      height: 100px;
+      border-radius: 999px;
+      background: rgba(52, 131, 250, 0.16);
+    }
+
+    .kpi span { color: var(--muted); display: block; font-size: 0.8rem; }
+    .kpi strong { display: block; margin-top: 8px; font-size: clamp(1.35rem, 3vw, 2.15rem); letter-spacing: -0.05em; }
+    .kpi em { color: var(--muted-2); display: block; margin-top: 4px; font-style: normal; font-size: 0.82rem; }
+
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 7px 11px;
+      font-weight: 900;
+      border: 1px solid currentColor;
+    }
+
+    .Verde { color: var(--green); }
+    .Amarelo { color: var(--yellow); }
+    .Vermelho { color: var(--red); }
+
+    .workspace { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; margin-top: 20px; }
+    .columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+
+    .chart-wrap { min-height: 360px; }
+    svg { width: 100%; height: auto; display: block; }
+
+    .legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; color: var(--muted); font-size: 0.88rem; }
+    .dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block; margin-right: 6px; }
+
+    ul { margin: 0; padding-left: 20px; }
+    li { margin: 8px 0; color: var(--muted-2); }
+
+    .answer-box {
+      margin-top: 14px;
+      border: 1px solid var(--border);
+      background: rgba(52, 131, 250, 0.1);
+      border-radius: 18px;
+      padding: 16px;
+      color: var(--text);
+      min-height: 96px;
+    }
+
+    .timeline { display: grid; gap: 10px; margin-top: 12px; }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .bar {
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--blue), var(--meli));
+    }
+
+    .table-scroll { overflow: auto; border-radius: 18px; border: 1px solid var(--border); }
+    table { width: 100%; min-width: 760px; border-collapse: collapse; }
+    th, td { padding: 12px; border-bottom: 1px solid var(--border); text-align: right; }
     th:first-child, td:first-child { text-align: left; }
-    th { color: var(--muted); font-weight: 600; background: #0d1117; }
-    .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
-    .hidden { display: none; }
-    @media (max-width: 850px) { .hero, .columns, .grid { grid-template-columns: 1fr; } }
+    th { color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; background: rgba(2, 6, 23, 0.55); }
+    td { color: var(--muted-2); }
+
+    .dropzone {
+      border: 1px dashed rgba(255, 255, 255, 0.22);
+      border-radius: 20px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .image-preview {
+      margin-top: 12px;
+      border-radius: 16px;
+      max-height: 220px;
+      max-width: 100%;
+      object-fit: contain;
+      background: #020617;
+      border: 1px solid var(--border);
+    }
+
+    .hidden { display: none !important; }
+
+    .footer-note { margin-top: 18px; font-size: 0.88rem; }
+
+    @media (max-width: 980px) {
+      .hero, .workspace { grid-template-columns: 1fr; }
+      .kpi-grid, .example-grid, .columns { grid-template-columns: 1fr; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+    }
   </style>
 </head>
 <body>
-<main>
-  <section class="hero">
-    <div class="card">
-      <div class="badge">⚡ MVP estruturado para Planejamento/Capacidades</div>
-      <h1>Capacity Vision ML</h1>
-      <p>
-        Analise CSVs de pacotes, pessoas, forecast e capacidade com cálculos confiáveis antes de gerar o insight executivo.
-        Esta versão prioriza qualidade: números estruturados primeiro, interpretação depois.
-      </p>
-      <div class="grid">
-        <div class="metric"><span>Status</span><strong id="status" class="status">—</strong></div>
-        <div class="metric"><span>Pacotes</span><strong id="packageChange">—</strong></div>
-        <div class="metric"><span>Pessoas</span><strong id="peopleChange">—</strong></div>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">ML</div>
+        <div>
+          <div>Capacity Vision ML</div>
+          <small style="color: var(--muted);">Planejamento • Pacotes • Pessoas • Capacidade</small>
+        </div>
       </div>
-      <label for="csvFile">Envie um CSV com período, pacotes, pessoas, forecast e capacidade</label>
-      <input id="csvFile" type="file" accept=".csv,text/csv" />
-      <button id="loadSample">Usar exemplo</button>
-      <button class="secondary" id="reset">Limpar</button>
-    </div>
-    <aside class="card">
-      <h2>Pergunte em linguagem natural</h2>
-      <p>Exemplos: “está subindo ou caindo?”, “as pessoas acompanham?”, “tem risco de capacidade?”</p>
-      <input id="question" type="text" placeholder="O volume está subindo desde janeiro?" />
-      <button id="ask">Responder</button>
-      <p id="answer">Carregue um CSV para começar.</p>
-    </aside>
-  </section>
+      <span class="pill">🧪 Protótipo navegável para você validar com exemplos reais</span>
+    </header>
 
-  <section id="results" class="hidden">
-    <div class="columns">
+    <section class="hero">
+      <article class="card">
+        <span class="pill">Qualidade primeiro: CSV/base real + análise executiva</span>
+        <h1>Leia capacidade operacional sem depender só do olho no gráfico.</h1>
+        <p class="hero-copy">
+          Carregue um CSV, cole um exemplo ou use um cenário pronto. A página calcula tendência, variação percentual,
+          produtividade, risco de capacidade e recomendações para apoiar decisões de headcount e forecast.
+        </p>
+        <div class="actions">
+          <a class="button-like" href="#analysis">Ver análise</a>
+          <button class="secondary" id="loadDefaultHero">Carregar exemplo crítico</button>
+          <button class="ghost" id="clearAllHero">Limpar tela</button>
+        </div>
+      </article>
+
+      <aside class="card flat">
+        <h2>O que você pode me mandar</h2>
+        <ul>
+          <li>CSV/planilha com período, pacotes e pessoas.</li>
+          <li>Forecast e capacidade planejada para detectar risco.</li>
+          <li>Print de gráfico para referência visual, enquanto a validação exata fica nos dados.</li>
+          <li>Exemplos reais de perguntas usadas pela sua área.</li>
+        </ul>
+        <p class="footer-note">A análise por imagem pode entrar depois como camada extra. Esta tela já deixa espaço para esse fluxo.</p>
+      </aside>
+    </section>
+
+    <section class="workspace" id="analysis">
       <div class="card">
-        <h2>Resumo executivo</h2>
-        <p id="summary"></p>
-        <h2>Alertas</h2>
-        <ul id="alerts"></ul>
+        <h2>1. Traga seus dados ou escolha um exemplo</h2>
+        <div class="input-grid">
+          <div class="dropzone">
+            <label for="csvFile">Upload de CSV</label>
+            <input id="csvFile" type="file" accept=".csv,text/csv" />
+            <small style="color: var(--muted);">Cabeçalhos aceitos: periodo/data, pacotes/volume, pessoas/headcount, forecast e capacidade.</small>
+          </div>
+
+          <div>
+            <label for="csvText">Ou cole aqui o seu exemplo</label>
+            <textarea id="csvText" spellcheck="false"></textarea>
+            <div class="actions">
+              <button id="analyzeText">Analisar dados colados</button>
+              <button class="secondary" id="copyTemplate">Copiar modelo CSV</button>
+            </div>
+          </div>
+
+          <div>
+            <label>Exemplos prontos para testar a página</label>
+            <div class="example-grid" id="exampleGrid"></div>
+          </div>
+
+          <div class="dropzone">
+            <label for="imageFile">Print/foto do gráfico (prévia visual)</label>
+            <input id="imageFile" type="file" accept="image/*" />
+            <small style="color: var(--muted);">Nesta versão, a imagem é exibida para contexto; a análise precisa vem do CSV.</small>
+            <img id="imagePreview" class="image-preview hidden" alt="Prévia do gráfico enviado" />
+          </div>
+        </div>
       </div>
-      <div class="card">
-        <h2>Recomendações</h2>
-        <ul id="recommendations"></ul>
-        <h2>Destaques</h2>
-        <ul id="highlights"></ul>
+
+      <aside class="card">
+        <h2>2. Faça uma pergunta</h2>
+        <p>Use linguagem simples, como você perguntaria para um analista.</p>
+        <input id="question" type="text" value="O volume está subindo ou caindo?" />
+        <div class="actions">
+          <button id="ask">Responder</button>
+          <button class="secondary quick-question" data-question="As pessoas acompanham o crescimento dos pacotes?">Pessoas acompanham?</button>
+          <button class="secondary quick-question" data-question="Existe risco de capacidade?">Risco?</button>
+        </div>
+        <div class="answer-box" id="answer">Carregue ou cole um CSV para começar.</div>
+      </aside>
+    </section>
+
+    <section id="results" class="hidden">
+      <div class="kpi-grid">
+        <div class="kpi"><span>Status</span><strong id="status">—</strong><em id="riskScore">Risco —</em></div>
+        <div class="kpi"><span>Pacotes</span><strong id="packageChange">—</strong><em id="packageDetail">—</em></div>
+        <div class="kpi"><span>Pessoas</span><strong id="peopleChange">—</strong><em id="peopleDetail">—</em></div>
+        <div class="kpi"><span>Produtividade</span><strong id="productivityChange">—</strong><em>pacotes por pessoa</em></div>
       </div>
-    </div>
-    <div class="card" style="margin-top: 16px;">
-      <h2>Dados analisados</h2>
-      <div id="table"></div>
-    </div>
-  </section>
-</main>
+
+      <div class="workspace">
+        <div class="card chart-wrap">
+          <h2>Gráfico reconstruído pelos dados</h2>
+          <div id="chart"></div>
+          <div class="legend">
+            <span><i class="dot" style="background: var(--blue);"></i>Pacotes</span>
+            <span><i class="dot" style="background: var(--meli);"></i>Pessoas</span>
+            <span><i class="dot" style="background: var(--purple);"></i>Capacidade</span>
+          </div>
+        </div>
+
+        <aside class="card">
+          <h2>Resumo executivo</h2>
+          <p id="summary"></p>
+          <h2>Linha do tempo</h2>
+          <div class="timeline" id="timeline"></div>
+        </aside>
+      </div>
+
+      <div class="columns" style="margin-top: 20px;">
+        <div class="card">
+          <h2>Alertas</h2>
+          <ul id="alerts"></ul>
+        </div>
+        <div class="card">
+          <h2>Recomendações</h2>
+          <ul id="recommendations"></ul>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 20px;">
+        <h2>Dados analisados</h2>
+        <div class="table-scroll" id="table"></div>
+      </div>
+    </section>
+  </main>
+
 <script>
-const sampleCsv = `periodo,pacotes,pessoas,forecast,capacidade
+const csvTemplate = `periodo,pacotes,pessoas,forecast,capacidade
 2026-01,100000,100,98000,115000
 2026-02,112000,103,110000,118000
 2026-03,130000,108,123000,128000
 2026-04,126000,109,132000,130000
 2026-05,148000,112,140000,142000
 2026-06,162000,114,150000,150000`;
+
+const examples = [
+  {
+    id: "critical",
+    title: "Crescimento com pressão",
+    description: "Pacotes sobem muito mais rápido que pessoas e capacidade estoura no último mês.",
+    csv: csvTemplate,
+    question: "Existe risco de capacidade?"
+  },
+  {
+    id: "healthy",
+    title: "Operação saudável",
+    description: "Volume, pessoas e capacidade evoluem em ritmos próximos, com baixa pressão.",
+    csv: `periodo,pacotes,pessoas,forecast,capacidade
+2026-01,90000,90,88000,110000
+2026-02,94000,92,93000,112000
+2026-03,98000,96,97000,116000
+2026-04,101000,99,100000,120000
+2026-05,105000,103,104000,124000
+2026-06,108000,106,107000,128000`,
+    question: "Está indo bem?"
+  },
+  {
+    id: "drop",
+    title: "Queda de demanda",
+    description: "Pacotes caem, mas headcount fica alto, mostrando possível ociosidade.",
+    csv: `periodo,pacotes,pessoas,forecast,capacidade
+2026-01,150000,120,151000,170000
+2026-02,145000,121,148000,170000
+2026-03,132000,120,140000,168000
+2026-04,121000,119,130000,165000
+2026-05,112000,118,126000,160000
+2026-06,108000,118,120000,158000`,
+    question: "O volume está subindo ou caindo?"
+  }
+];
+
 let currentReport = null;
 
 const aliases = {
@@ -129,28 +475,46 @@ const aliases = {
 };
 
 function normalize(value) {
-  return value.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9_]+/g, "_").replace(/^_|_$/g, "");
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9_]+/g, "_")
+    .replace(/^_|_$/g, "");
 }
+
 function parseNumber(value) {
   const clean = String(value || "").trim().replace(/\s/g, "");
   if (!clean) return null;
-  const normalized = clean.includes(",") && clean.includes(".") ? clean.replace(/\./g, "").replace(",", ".") : clean.replace(",", ".");
-  return Number(normalized);
+  const normalized = clean.includes(",") && clean.includes(".")
+    ? clean.replace(/\./g, "").replace(",", ".")
+    : clean.replace(",", ".");
+  const parsed = Number(normalized);
+  if (Number.isNaN(parsed)) throw new Error(`Valor numérico inválido: ${value}`);
+  return parsed;
 }
+
 function splitCsvLine(line) {
   const values = [];
   let current = "";
   let insideQuotes = false;
   for (const char of line) {
     if (char === '"') insideQuotes = !insideQuotes;
-    else if (char === "," && !insideQuotes) { values.push(current); current = ""; }
-    else current += char;
+    else if (char === "," && !insideQuotes) {
+      values.push(current);
+      current = "";
+    } else {
+      current += char;
+    }
   }
   values.push(current);
   return values.map(value => value.trim());
 }
+
 function parseCsv(csv) {
-  const lines = csv.trim().split(/\r?\n/).filter(Boolean);
+  const lines = String(csv || "").trim().split(/\r?\n/).filter(Boolean);
+  if (lines.length < 2) throw new Error("Cole ou envie um CSV com cabeçalho e pelo menos uma linha de dados.");
   const headers = splitCsvLine(lines[0]);
   const map = {};
   headers.forEach((header, index) => {
@@ -162,88 +526,276 @@ function parseCsv(csv) {
   ["period", "packages", "people"].forEach(required => {
     if (map[required] === undefined) throw new Error(`CSV precisa da coluna ${required}.`);
   });
-  return lines.slice(1).map(line => {
+  const points = lines.slice(1).map(line => {
     const cols = splitCsvLine(line);
+    const people = parseNumber(cols[map.people]);
+    const packages = parseNumber(cols[map.packages]);
+    if (!people || people <= 0) throw new Error("A coluna pessoas/headcount precisa ser maior que zero.");
+    if (packages === null || packages < 0) throw new Error("A coluna pacotes/volume precisa ser maior ou igual a zero.");
     return {
       period: cols[map.period],
-      packages: parseNumber(cols[map.packages]),
-      people: parseNumber(cols[map.people]),
+      packages,
+      people,
       forecast: map.forecast === undefined ? null : parseNumber(cols[map.forecast]),
       capacity: map.capacity === undefined ? null : parseNumber(cols[map.capacity])
     };
   }).sort((a, b) => a.period.localeCompare(b.period));
+  if (points.length < 2) throw new Error("Informe pelo menos dois períodos para calcular variação.");
+  return points;
 }
+
 function percent(start, end) { return start === 0 ? null : ((end - start) / start) * 100; }
-function fmtPct(value) { return value === null ? "—" : `${value > 0 ? "+" : ""}${value.toFixed(1)}%`; }
+function fmtPct(value) { return value === null || value === undefined ? "—" : `${value > 0 ? "+" : ""}${value.toFixed(1)}%`; }
 function fmtNum(value) { return Number(value).toLocaleString("pt-BR", { maximumFractionDigits: 1 }); }
 function slope(values) {
-  const n = values.length, xm = (n - 1) / 2, ym = values.reduce((a,b) => a + b, 0) / n;
+  const n = values.length;
+  const xm = (n - 1) / 2;
+  const ym = values.reduce((a, b) => a + b, 0) / n;
   const num = values.reduce((sum, y, x) => sum + (x - xm) * (y - ym), 0);
   const den = values.reduce((sum, _, x) => sum + Math.pow(x - xm, 2), 0);
   return den ? num / den : 0;
 }
+function maxBy(items, selector) { return items.reduce((best, item) => selector(item) > selector(best) ? item : best, items[0]); }
+function minBy(items, selector) { return items.reduce((best, item) => selector(item) < selector(best) ? item : best, items[0]); }
+
 function analyze(points) {
-  const first = points[0], last = points[points.length - 1];
+  const first = points[0];
+  const last = points[points.length - 1];
   const pkgPct = percent(first.packages, last.packages);
   const pplPct = percent(first.people, last.people);
   const firstProd = first.packages / first.people;
   const lastProd = last.packages / last.people;
   const prodPct = percent(firstProd, lastProd);
-  const pkgSlope = slope(points.map(p => p.packages));
-  const trend = Math.abs(pkgSlope) / (points.reduce((s,p) => s + p.packages, 0) / points.length) < 0.01 ? "estável" : (pkgSlope > 0 ? "alta" : "queda");
+  const avgPackages = points.reduce((sum, point) => sum + point.packages, 0) / points.length;
+  const pkgSlope = slope(points.map(point => point.packages));
+  const trendStrength = avgPackages ? Math.abs(pkgSlope) / avgPackages : 0;
+  const trend = trendStrength < 0.01 ? "estável" : (pkgSlope > 0 ? "alta" : "queda");
   let risk = 10;
   const alerts = [];
   const recommendations = [];
   const gap = (pkgPct || 0) - (pplPct || 0);
-  if (gap >= 15) { risk += 25; alerts.push(`Pacotes cresceram ${fmtPct(pkgPct)} e pessoas ${fmtPct(pplPct)}, gap de ${gap.toFixed(1)} p.p.`); recommendations.push("Validar produtividade por turno e sustentabilidade do headcount atual."); }
-  if (gap <= -15) { risk += 15; alerts.push("Headcount cresceu acima do volume; pode haver capacidade ociosa."); recommendations.push("Revisar escala e redistribuição antes de novas contratações."); }
-  const worstCapacity = points.filter(p => p.capacity).map(p => ({ period: p.period, utilization: p.packages / p.capacity })).sort((a,b) => b.utilization - a.utilization)[0];
-  if (worstCapacity?.utilization > 1.05) { risk += 30; alerts.push(`Capacidade excedida em ${worstCapacity.period}: ${(worstCapacity.utilization * 100).toFixed(1)}%.`); recommendations.push("Criar plano de contingência para reforço, overtime ou redistribuição de demanda."); }
-  else if (worstCapacity?.utilization > .9) { risk += 15; alerts.push(`Capacidade próxima do limite em ${worstCapacity.period}: ${(worstCapacity.utilization * 100).toFixed(1)}%.`); }
-  if (prodPct < -10) { risk += 20; alerts.push(`Produtividade caiu ${Math.abs(prodPct).toFixed(1)}%.`); recommendations.push("Investigar absenteísmo, mix de pacotes e treinamento."); }
+
+  if (gap >= 15) {
+    risk += 25;
+    alerts.push(`Pacotes cresceram ${fmtPct(pkgPct)} e pessoas ${fmtPct(pplPct)}, abrindo gap de ${gap.toFixed(1)} p.p.`);
+    recommendations.push("Validar produtividade por turno/site e confirmar se o headcount atual sustenta o volume.");
+  }
+  if (gap <= -15) {
+    risk += 15;
+    alerts.push("Headcount cresceu ou permaneceu alto enquanto o volume ficou menor, sugerindo possível ociosidade.");
+    recommendations.push("Revisar escala, turnos e realocação de pessoas antes de abrir novas posições.");
+  }
+
+  const capacityPoints = points.filter(point => point.capacity);
+  const worstCapacity = capacityPoints.length ? maxBy(capacityPoints.map(point => ({ period: point.period, utilization: point.packages / point.capacity })), item => item.utilization) : null;
+  if (worstCapacity?.utilization > 1.05) {
+    risk += 30;
+    alerts.push(`Capacidade excedida em ${worstCapacity.period}: utilização de ${(worstCapacity.utilization * 100).toFixed(1)}%.`);
+    recommendations.push("Criar plano de contingência com reforço, overtime, redistribuição de demanda ou revisão de SLA.");
+  } else if (worstCapacity?.utilization > 0.9) {
+    risk += 15;
+    alerts.push(`Capacidade próxima do limite em ${worstCapacity.period}: utilização de ${(worstCapacity.utilization * 100).toFixed(1)}%.`);
+  }
+
+  const forecastPoints = points.filter(point => point.forecast);
+  const worstForecast = forecastPoints.length ? maxBy(forecastPoints.map(point => ({ period: point.period, error: (point.packages - point.forecast) / point.forecast })), item => Math.abs(item.error)) : null;
+  if (worstForecast && Math.abs(worstForecast.error) > 0.15) {
+    risk += 15;
+    alerts.push(`Forecast com desvio relevante em ${worstForecast.period}: ${(worstForecast.error * 100).toFixed(1)}% vs. previsto.`);
+    recommendations.push("Recalibrar forecast com histórico recente, sazonalidade e eventos comerciais.");
+  }
+
+  if (prodPct < -10) {
+    risk += 20;
+    alerts.push(`Produtividade caiu ${Math.abs(prodPct).toFixed(1)}% no período.`);
+    recommendations.push("Investigar absenteísmo, mix de pacotes, curva de aprendizagem, layout e qualidade operacional.");
+  }
+
+  if (trend === "queda" && pkgPct < -8) {
+    risk += 10;
+    alerts.push("Volume em queda relevante; validar se é sazonalidade esperada ou mudança de demanda.");
+  }
+
   const status = risk >= 65 ? "Vermelho" : risk >= 35 ? "Amarelo" : "Verde";
+  const maxPackage = maxBy(points, point => point.packages);
+  const minPackage = minBy(points, point => point.packages);
+  const maxProductivity = maxBy(points, point => point.packages / point.people);
   return {
-    points, status, risk: Math.min(risk, 100), pkgPct, pplPct, prodPct, trend,
+    points,
+    status,
+    risk: Math.min(risk, 100),
+    pkgPct,
+    pplPct,
+    prodPct,
+    trend,
+    first,
+    last,
+    maxPackage,
+    minPackage,
+    maxProductivity,
     summary: `Cenário ${status.toLowerCase()}: pacotes variaram ${fmtPct(pkgPct)} entre ${first.period} e ${last.period}, enquanto pessoas variaram ${fmtPct(pplPct)}. Produtividade variou ${fmtPct(prodPct)}. ${alerts[0] || "Sem alertas críticos no período."}`,
     alerts: alerts.length ? alerts : ["Nenhum alerta crítico detectado com os dados informados."],
-    recommendations: recommendations.length ? recommendations : ["Manter acompanhamento semanal de volume, pessoas e produtividade."],
-    highlights: [`Maior volume: ${points.reduce((a,b) => a.packages > b.packages ? a : b).period}`, `Menor volume: ${points.reduce((a,b) => a.packages < b.packages ? a : b).period}`, `Tendência principal: ${trend}`]
+    recommendations: recommendations.length ? recommendations : ["Manter acompanhamento semanal de volume, headcount, produtividade e capacidade utilizada."]
   };
 }
+
+function answerQuestion(question, report) {
+  const normalized = normalize(question);
+  if (!report) return "Carregue um CSV primeiro.";
+  if (normalized.includes("subindo") || normalized.includes("caindo") || normalized.includes("tendencia")) {
+    return `O volume está em ${report.trend}. De ${report.first.period} até ${report.last.period}, pacotes variaram ${fmtPct(report.pkgPct)}.`;
+  }
+  if (normalized.includes("pessoa") || normalized.includes("headcount") || normalized.includes("equipe")) {
+    return `Pessoas variaram ${fmtPct(report.pplPct)}, enquanto pacotes variaram ${fmtPct(report.pkgPct)}. Esse comparativo deixa o cenário ${report.status}.`;
+  }
+  if (normalized.includes("risco") || normalized.includes("capacidade") || normalized.includes("bem")) {
+    return `Status ${report.status}, risco ${report.risk}/100. Principal alerta: ${report.alerts[0]}`;
+  }
+  if (normalized.includes("produtividade")) {
+    return `A produtividade variou ${fmtPct(report.prodPct)}. O melhor período foi ${report.maxProductivity.period}, com ${fmtNum(report.maxProductivity.packages / report.maxProductivity.people)} pacotes por pessoa.`;
+  }
+  return report.summary;
+}
+
+function createChart(report) {
+  const width = 900;
+  const height = 360;
+  const padding = 48;
+  const points = report.points;
+  const x = index => padding + (index * (width - padding * 2)) / Math.max(points.length - 1, 1);
+  const scale = (value, min, max) => height - padding - ((value - min) * (height - padding * 2)) / Math.max(max - min, 1);
+  const pkgMin = Math.min(...points.map(point => point.packages));
+  const pkgMax = Math.max(...points.flatMap(point => [point.packages, point.capacity || point.packages]));
+  const peopleMin = Math.min(...points.map(point => point.people));
+  const peopleMax = Math.max(...points.map(point => point.people));
+  const packagePath = points.map((point, index) => `${index === 0 ? "M" : "L"}${x(index)},${scale(point.packages, pkgMin, pkgMax)}`).join(" ");
+  const peoplePath = points.map((point, index) => `${index === 0 ? "M" : "L"}${x(index)},${scale(point.people, peopleMin, peopleMax)}`).join(" ");
+  const capacityPath = points
+    .map((point, index) => point.capacity ? `${index === 0 ? "M" : "L"}${x(index)},${scale(point.capacity, pkgMin, pkgMax)}` : null)
+    .filter(Boolean)
+    .join(" ");
+  const labels = points.map((point, index) => `<text x="${x(index)}" y="338" text-anchor="middle" fill="#94a3b8" font-size="12">${point.period}</text>`).join("");
+  const packageDots = points.map((point, index) => `<circle cx="${x(index)}" cy="${scale(point.packages, pkgMin, pkgMax)}" r="5" fill="#3483fa"><title>${point.period}: ${fmtNum(point.packages)} pacotes</title></circle>`).join("");
+  const peopleDots = points.map((point, index) => `<circle cx="${x(index)}" cy="${scale(point.people, peopleMin, peopleMax)}" r="4" fill="#ffe600"><title>${point.period}: ${fmtNum(point.people)} pessoas</title></circle>`).join("");
+  return `
+    <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Gráfico de pacotes, pessoas e capacidade">
+      <defs>
+        <linearGradient id="area" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="#3483fa" stop-opacity="0.35" />
+          <stop offset="100%" stop-color="#3483fa" stop-opacity="0" />
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="${width}" height="${height}" rx="22" fill="rgba(255,255,255,0.035)" />
+      <line x1="${padding}" y1="${height - padding}" x2="${width - padding}" y2="${height - padding}" stroke="rgba(255,255,255,.15)" />
+      <line x1="${padding}" y1="${padding}" x2="${padding}" y2="${height - padding}" stroke="rgba(255,255,255,.15)" />
+      <path d="${packagePath} L ${x(points.length - 1)},${height - padding} L ${padding},${height - padding} Z" fill="url(#area)" />
+      ${capacityPath ? `<path d="${capacityPath}" fill="none" stroke="#a78bfa" stroke-width="3" stroke-dasharray="8 8" />` : ""}
+      <path d="${packagePath}" fill="none" stroke="#3483fa" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="${peoplePath}" fill="none" stroke="#ffe600" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+      ${packageDots}
+      ${peopleDots}
+      ${labels}
+      <text x="${padding}" y="28" fill="#cbd5e1" font-size="13">Pacotes/capacidade: escala esquerda • Pessoas: escala visual comparativa</text>
+    </svg>`;
+}
+
+function renderTimeline(report) {
+  const maxPackages = Math.max(...report.points.map(point => point.packages));
+  return report.points.map(point => {
+    const width = Math.max((point.packages / maxPackages) * 100, 5);
+    const productivity = point.packages / point.people;
+    return `<div class="timeline-item"><strong>${point.period}</strong><div><div class="bar" style="width: ${width}%"></div><small style="color: var(--muted);">${fmtNum(point.packages)} pacotes • ${fmtNum(productivity)} pacotes/pessoa</small></div></div>`;
+  }).join("");
+}
+
 function render(report) {
   currentReport = report;
   document.getElementById("results").classList.remove("hidden");
   const status = document.getElementById("status");
-  status.textContent = report.status;
-  status.className = `status ${report.status}`;
+  status.innerHTML = `<span class="status-chip ${report.status}">● ${report.status}</span>`;
+  document.getElementById("riskScore").textContent = `Risco ${report.risk}/100`;
   document.getElementById("packageChange").textContent = fmtPct(report.pkgPct);
+  document.getElementById("packageDetail").textContent = `${fmtNum(report.first.packages)} → ${fmtNum(report.last.packages)}`;
   document.getElementById("peopleChange").textContent = fmtPct(report.pplPct);
+  document.getElementById("peopleDetail").textContent = `${fmtNum(report.first.people)} → ${fmtNum(report.last.people)}`;
+  document.getElementById("productivityChange").textContent = fmtPct(report.prodPct);
   document.getElementById("summary").textContent = report.summary;
   document.getElementById("alerts").innerHTML = report.alerts.map(item => `<li>${item}</li>`).join("");
   document.getElementById("recommendations").innerHTML = report.recommendations.map(item => `<li>${item}</li>`).join("");
-  document.getElementById("highlights").innerHTML = report.highlights.map(item => `<li>${item}</li>`).join("");
-  document.getElementById("table").innerHTML = `<table><thead><tr><th>Período</th><th>Pacotes</th><th>Pessoas</th><th>Forecast</th><th>Capacidade</th><th>Pacotes/Pessoa</th></tr></thead><tbody>${report.points.map(p => `<tr><td>${p.period}</td><td>${fmtNum(p.packages)}</td><td>${fmtNum(p.people)}</td><td>${p.forecast ? fmtNum(p.forecast) : "—"}</td><td>${p.capacity ? fmtNum(p.capacity) : "—"}</td><td>${fmtNum(p.packages / p.people)}</td></tr>`).join("")}</tbody></table>`;
+  document.getElementById("chart").innerHTML = createChart(report);
+  document.getElementById("timeline").innerHTML = renderTimeline(report);
+  document.getElementById("table").innerHTML = `<table><thead><tr><th>Período</th><th>Pacotes</th><th>Pessoas</th><th>Forecast</th><th>Capacidade</th><th>Utilização</th><th>Pacotes/Pessoa</th></tr></thead><tbody>${report.points.map(point => {
+    const utilization = point.capacity ? `${((point.packages / point.capacity) * 100).toFixed(1)}%` : "—";
+    return `<tr><td>${point.period}</td><td>${fmtNum(point.packages)}</td><td>${fmtNum(point.people)}</td><td>${point.forecast ? fmtNum(point.forecast) : "—"}</td><td>${point.capacity ? fmtNum(point.capacity) : "—"}</td><td>${utilization}</td><td>${fmtNum(point.packages / point.people)}</td></tr>`;
+  }).join("")}</tbody></table>`;
+  document.getElementById("answer").textContent = answerQuestion(document.getElementById("question").value, report);
 }
-function loadCsv(csv) {
-  try { render(analyze(parseCsv(csv))); }
-  catch (error) { alert(error.message); }
+
+function loadCsv(csv, question = null) {
+  document.getElementById("csvText").value = csv.trim();
+  if (question) document.getElementById("question").value = question;
+  render(analyze(parseCsv(csv)));
 }
+
+function safeLoadCsv(csv, question = null) {
+  try {
+    loadCsv(csv, question);
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+function renderExamples() {
+  const grid = document.getElementById("exampleGrid");
+  grid.innerHTML = examples.map(example => `
+    <button class="example-card" data-example="${example.id}">
+      <strong>${example.title}</strong>
+      <small>${example.description}</small>
+    </button>
+  `).join("");
+  grid.querySelectorAll("[data-example]").forEach(button => {
+    button.addEventListener("click", () => {
+      const example = examples.find(item => item.id === button.dataset.example);
+      safeLoadCsv(example.csv, example.question);
+    });
+  });
+}
+
+renderExamples();
+document.getElementById("csvText").value = csvTemplate;
+document.getElementById("loadDefaultHero").addEventListener("click", () => safeLoadCsv(examples[0].csv, examples[0].question));
+document.getElementById("clearAllHero").addEventListener("click", () => location.reload());
+document.getElementById("analyzeText").addEventListener("click", () => safeLoadCsv(document.getElementById("csvText").value));
+document.getElementById("copyTemplate").addEventListener("click", async () => {
+  document.getElementById("csvText").value = csvTemplate;
+  await navigator.clipboard?.writeText(csvTemplate);
+});
 document.getElementById("csvFile").addEventListener("change", event => {
   const file = event.target.files[0];
   if (!file) return;
-  file.text().then(loadCsv);
+  file.text().then(content => safeLoadCsv(content));
 });
-document.getElementById("loadSample").addEventListener("click", () => loadCsv(sampleCsv));
-document.getElementById("reset").addEventListener("click", () => location.reload());
+document.getElementById("imageFile").addEventListener("change", event => {
+  const file = event.target.files[0];
+  const preview = document.getElementById("imagePreview");
+  if (!file) {
+    preview.classList.add("hidden");
+    return;
+  }
+  preview.src = URL.createObjectURL(file);
+  preview.classList.remove("hidden");
+});
 document.getElementById("ask").addEventListener("click", () => {
-  if (!currentReport) return;
-  const q = normalize(document.getElementById("question").value);
-  let answer = currentReport.summary;
-  if (q.includes("subindo") || q.includes("caindo") || q.includes("tendencia")) answer = `O volume está em ${currentReport.trend}; variação total de ${fmtPct(currentReport.pkgPct)}.`;
-  if (q.includes("pessoas") || q.includes("headcount")) answer = `Pessoas variaram ${fmtPct(currentReport.pplPct)} contra ${fmtPct(currentReport.pkgPct)} em pacotes.`;
-  if (q.includes("risco") || q.includes("capacidade") || q.includes("bem")) answer = `Status ${currentReport.status}, risco ${currentReport.risk}/100. ${currentReport.alerts[0]}`;
-  document.getElementById("answer").textContent = answer;
+  document.getElementById("answer").textContent = answerQuestion(document.getElementById("question").value, currentReport);
 });
+document.querySelectorAll(".quick-question").forEach(button => {
+  button.addEventListener("click", () => {
+    document.getElementById("question").value = button.dataset.question;
+    document.getElementById("answer").textContent = answerQuestion(button.dataset.question, currentReport);
+  });
+});
+
+safeLoadCsv(examples[0].csv, examples[0].question);
 </script>
 </body>
 </html>

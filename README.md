@@ -45,13 +45,25 @@ python -m capacity_vision.cli sample_data/capacity_sample.csv --question "O volu
 
 ## Como abrir a interface web
 
-A interface é estática e não exige backend. Basta abrir o arquivo:
+A interface agora é um protótipo navegável mais completo: permite upload de CSV, colar exemplos, escolher cenários prontos, ver gráfico reconstruído, KPIs, alertas, recomendações e prévia de imagem do gráfico. Ela é estática e não exige backend. Basta abrir o arquivo:
 
 ```bash
 python -m http.server 8000 --directory web
 ```
 
-Depois acesse `http://localhost:8000` e clique em **Usar exemplo** ou envie um CSV.
+Depois acesse `http://localhost:8000`. A tela já abre com um exemplo crítico carregado, mas você também pode clicar nos cenários prontos, enviar CSV ou colar seus próprios exemplos.
+
+## Como validar seus exemplos
+
+1. Abra a interface web.
+2. Cole um CSV real ou simplificado no campo **Ou cole aqui o seu exemplo**.
+3. Clique em **Analisar dados colados**.
+4. Use a área de perguntas para testar frases como “tem risco de capacidade?”, “as pessoas acompanham?” ou “a produtividade caiu?”.
+5. Se quiser mostrar um print do dashboard, use o upload de imagem para prévia visual; a análise exata continua vindo do CSV.
+
+## Validação contra conflitos de código
+
+O projeto tem um teste de integridade para evitar que marcadores de conflito de merge, como `<<<<<<<`, `=======` e `>>>>>>>`, fiquem dentro dos arquivos versionados. Também há uma validação de sintaxe do JavaScript embutido na página web quando Node.js está disponível.
 
 ## Estrutura do projeto
 
